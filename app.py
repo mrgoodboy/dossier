@@ -7,6 +7,8 @@ from core import NDEVCredentials
 from asr import *
 from scipy.io import wavfile
 import numpy
+from werkzeug import secure_filename
+
 
 
 app = Flask(__name__)
@@ -40,12 +42,13 @@ def upload():
 
 @app.route('/api/photoupload', methods = ['POST'])
 def photoupload():
-	file = request.files['file']
-	sum=md5sum(file)
-	if file and allowed_file(sum):
-		filename = secure_filename(sum)+'.wav'
-		file.save(os.path.join('audio/', filename))
-
+	print request.stream.read()
+	print request.headers
+	if request.data:
+		filename = secure_filename()+'.wav'
+		f=open(os.path.join('audio/', filename),'wb')
+		f.write(request.data)
+		f.close()
 		signal = wavfile.read(os.path.join('audio/',filename))
 		data = signal[1][1000:] # delete click transient
 		print data
@@ -110,7 +113,7 @@ def photoupload():
 
 
 
-	return False		
+	return "OOPS"		
 
 
 def processUnstructuredArray(array):
