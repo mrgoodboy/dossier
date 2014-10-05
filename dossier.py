@@ -25,7 +25,6 @@ cardIndex = client.getIndex("cards")
 #index a conversation
 
 def dossierConversation(transcript):
-	transcript = json.loads(transcript)
 	information = extractInformation(transcript)
 
 	if "name" in information:
