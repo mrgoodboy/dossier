@@ -2,13 +2,14 @@ from flask import Flask
 import hashlib
 import dossier
 from flask import request,jsonify,redirect,Response
+from werkzeug import secure_filename
 import json
 from core import NDEVCredentials
 from asr import *
 from scipy.io import wavfile
 import numpy
-from werkzeug import secure_filename
-
+import subprocess
+import os
 
 
 app = Flask(__name__)
@@ -42,13 +43,20 @@ def upload():
 
 @app.route('/api/photoupload', methods = ['POST'])
 def photoupload():
-	print request.stream.read()
-	print request.headers
-	if request.data:
-		filename = secure_filename()+'.wav'
-		f=open(os.path.join('audio/', filename),'wb')
-		f.write(request.data)
-		f.close()
+	f = request.files['file']
+	sum=hashlib.md5(f.read()).hexdigest()
+	if f:
+		filename = secure_filename(sum)+'.mp4'
+		f.seek(0)
+		f.save(os.path.join('audio/', filename))
+		print "HELLO"
+		subprocess.call("faad -o "+os.path.join('audio/', filename[:-4])+".wav "+os.path.join('audio/', filename),shell=True)
+		print "GO"
+		filename = filename[:-4]+".wav"
+		print "WASSUP"
+		print("sox "+os.path.join('audio/', filename)+" -c 1 "+os.path.join('audio/', "1"+filename)+" avg -l")
+		subprocess.call("sox "+os.path.join('audio/', filename)+" -c 1 "+os.path.join('audio/', "1"+filename),shell=True)
+		filename = "1"+filename
 		signal = wavfile.read(os.path.join('audio/',filename))
 		data = signal[1][1000:] # delete click transient
 		print data
@@ -93,7 +101,7 @@ def photoupload():
 		    if counter%4 == 1:
 		    	lastpt = i
 		    if counter%4 == 2:
-		    	wavfile.write(os.path.join('audio/',i+filename),8000,speech[lastpt:i])
+		    	wavfile.write(os.path.join('audio/',str(i)+filename),8000,speech[lastpt:i])
 		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
 		        if asr_req.response.was_successful():
 					stuffsaid.append(asr_req.response.get_recognition_result())
@@ -102,7 +110,7 @@ def photoupload():
 		    if counter%4 == 3:
 		    	lastpt = i
 		    if counter%4 == 0:
-				wavfile.write(os.path.join('audio/',i+filename),8000,speech[lastpt:i])
+				wavfile.write(os.path.join('audio/',str(i)+filename),8000,speech[lastpt:i])
 				asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
 				if asr_req.response.was_successful():
 		 			stuffsaid.append(asr_req.response.get_recognition_result())
@@ -112,22 +120,21 @@ def photoupload():
 		return processUnstructuredArray(stuffsaid)
 
 
-
-	return "OOPS"		
+	sucks={"response":'no'}
+	return jsonify(sucks)		
 
 
 def processUnstructuredArray(array):
-
 	transcript = []
 	for idx, val in enumerate(array):
 		if idx % 2 == 0:
 			transcript.append({ "me" : val })
 		else:
 			transcript.append({ "you" : val })
-	print transcript
+
 	response = dossier.dossierConversation(transcript)
 	print response
-	return response
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 #query methods
 @app.route('/api/getcards', methods = ['GET'])
