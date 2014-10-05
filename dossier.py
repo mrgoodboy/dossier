@@ -6,11 +6,11 @@ from iodpython.iodindex import IODClient
 import os
 
 
-ALCHEMYAPI_KEY = os.environ("DOSSIER_ALCHEMY_KEY")
+ALCHEMYAPI_KEY = os.environ["DOSSIER_ALCHEMY_KEY"]
 ALCHEMY_RELEVANCE_THRESHOLD = 0.7
 
 alchemyapi = AlchemyAPI()
-client = IODClient("http://api.idolondemand.com/", os.environ("DOSSIER_IDOL_KEY"))
+client = IODClient("http://api.idolondemand.com/", os.environ["DOSSIER_IDOL_KEY"])
 index = client.getIndex("conversations")
 cardIndex = client.getIndex("cards")
 
