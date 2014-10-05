@@ -28,7 +28,7 @@ etc
 
 @app.route('/')
 def hello_world():
-    return 'Dossier is the shit!'
+    return getConversations()
 
 @app.route('/', methods = ['POST'])
 def upload():
