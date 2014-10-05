@@ -15,7 +15,8 @@ index = client.getIndex("conversations")
 cardIndex = client.getIndex("cards")
 
 '''
-original format of transcript is, should be reformatted before
+run dossierConversation to add transcript to indexConver
+transcript must be segmented and formatted like this
 
 [
 {"me":"hello"},
