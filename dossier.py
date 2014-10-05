@@ -26,6 +26,7 @@ etc
 
 '''
 
+
 #index a conversation
 
 def dossierConversation(transcript):
@@ -34,7 +35,6 @@ def dossierConversation(transcript):
 
 	if "name" in information:
 		title = "Conversation with " + information["name"]
-		addCardToIndex(information)
 	else:
 		information["name"] = ""
 		title = "Conversation"
@@ -43,10 +43,7 @@ def dossierConversation(transcript):
 	concepts = getTopicsFromConversation(preprocessedTranscript)
 	segmentedTranscript = generateSegmentedTranscript(transcript, information)
 
-
-
-	print information
-	print indexConversation(segmentedTranscript, information["name"], "Conversation with " + information["name"])
+	return information
 
 def addCardToIndex(information):
 	cards = getCard(information["name"])

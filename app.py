@@ -23,12 +23,15 @@ etc
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return 'Dossier is the shit!'
 
-@app.route('/api/tester', methods = ['POST'])
-def echo():
-	return request.data
+@app.route('/', methods = ['POST'])
+def upload():
+	#somehow extract transcript
+	transcript = params['upload']
 
+	card = dossier.dossierConversation(transcript)
+	return json.dumps(card['documents'])
 
 @app.route('/api/photoupload', methods = ['POST'])
 def photoupload():
@@ -39,6 +42,7 @@ def photoupload():
 		file.save(os.path.join('/audio/', filename))
         return filename
 	return False		
+
 
 
 
