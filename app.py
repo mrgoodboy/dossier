@@ -106,14 +106,24 @@ def photoupload():
 		        	stuffsaid.append(asr_req.response.get_recognition_result())
 		        else:
 		        	return asr_req.response.error_message
-		return stuffsaid
+		return processUnstructuredArray(stuffsaid)
 
 
 
 	return False		
 
 
+def processUnstructuredArray(array):
+	transcript = []
+	for idx, val in enumerate(array):
+		if idx % 2 == 0:
+			transcript.append({ "me" : val })
+		else:
+			transcript.append({ "you" : val })
 
+	response = dossier.dossierConversation(transcript)
+	print response
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 #query methods
 @app.route('/api/getcards', methods = ['GET'])
