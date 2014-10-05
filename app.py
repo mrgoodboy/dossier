@@ -5,6 +5,9 @@ from flask import request,jsonify,redirect,Response
 import json
 from core import NDEVCredentials
 from asr import *
+from scipy.io import wavfile
+import numpy
+
 
 app = Flask(__name__)
 print "Starting webapp!"
@@ -43,12 +46,69 @@ def photoupload():
 		filename = secure_filename(sum)+'.wav'
 		file.save(os.path.join('/audio/', filename))
         return filename
-        creds = NDEVCredentials()
-        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=filename)
-		if asr_req.response.was_successful():
-        	return asr_req.response.get_recognition_result()
-        else:
-        	return asr_req.response.error_message
+
+		signal = wavfile.read('conversation.wav')
+		data = signal[1][1000:] # delete click transient
+		print data
+		iStrt=data.size
+		# threshold to isolate the speech
+		tau = 3277# define threshold value from plot
+		# search for start of speech value
+		for i in range(0,data.size):
+		    if data[i] > tau:
+		        iStrt = i    # remember first i value that exceeds tau
+		        break    # exit loop
+		    
+		 
+		 
+		# search for end of speech by applying threshold from the back
+		iEnd=0
+		for i in range(1,data.size):
+		    if data[data.size - i] > tau:
+		        iEnd = data.size - i    # remember last i value that exceeds tau
+		        break    # exit loop
+		    
+
+		speech = data[iStrt - 300:iEnd + 300]# acquire signal before and after thresholds
+		 
+		speakerA = numpy.zeros(speech.size, dtype=numpy.int16)
+		speakerB = numpy.zeros(speech.size,dtype=numpy.int16)
+		thresholdPoints = numpy.zeros(speech.size,dtype=numpy.int16)
+		counter = 0
+		tau2 = 4917
+		 
+		lastpt = 0
+		creds = NDEVCredentials()
+		stuffsaid = []
+		# Makes vector of 0s and 1s representing the sound file.
+		for i in range(4000,speech.size - 4000):
+		    if speech[i] > tau:
+		        thresholdPoints[(i - 4000):(i + 4000)] = numpy.ones(8000,dtype=numpy.int16)
+		for i in range(0,speech.size-1):
+		    if thresholdPoints[i] != thresholdPoints[i - 1]:
+		        counter = counter + 1
+		    	
+		    if counter%4 == 1:
+		    	lastpt = i
+		    if counter%4 == 2:
+		    	wavfile.write(i+filename,8000,speech[lastpt:i])
+		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=filename)
+				if asr_req.response.was_successful():
+		        	stuffsaid.append(asr_req.response.get_recognition_result())
+		        else:
+		        	return asr_req.response.error_message
+		    if counter%4 == 3:
+		    	lastpt = i
+		    if counter%4 == 0:
+				wavfile.write(i+filename,8000,speech[lastpt:i])
+		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=filename)
+				if asr_req.response.was_successful():
+		        	stuffsaid.append(asr_req.response.get_recognition_result())
+		        else:
+		        	return asr_req.response.error_message
+		return stuffsaid
+
+
 
 	return False		
 
