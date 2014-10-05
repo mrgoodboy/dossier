@@ -44,10 +44,9 @@ def photoupload():
 	sum=md5sum(file)
 	if file and allowed_file(sum):
 		filename = secure_filename(sum)+'.wav'
-		file.save(os.path.join('/audio/', filename))
-        return filename
+		file.save(os.path.join('audio/', filename))
 
-		signal = wavfile.read('conversation.wav')
+		signal = wavfile.read(os.path.join('audio/',filename))
 		data = signal[1][1000:] # delete click transient
 		print data
 		iStrt=data.size
@@ -91,8 +90,8 @@ def photoupload():
 		    if counter%4 == 1:
 		    	lastpt = i
 		    if counter%4 == 2:
-		    	wavfile.write(i+filename,8000,speech[lastpt:i])
-		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=filename)
+		    	wavfile.write(os.path.join('audio/',i+filename),8000,speech[lastpt:i])
+		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
 				if asr_req.response.was_successful():
 		        	stuffsaid.append(asr_req.response.get_recognition_result())
 		        else:
@@ -100,8 +99,8 @@ def photoupload():
 		    if counter%4 == 3:
 		    	lastpt = i
 		    if counter%4 == 0:
-				wavfile.write(i+filename,8000,speech[lastpt:i])
-		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=filename)
+				wavfile.write(os.path.join('audio/',i+filename),8000,speech[lastpt:i])
+		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
 				if asr_req.response.was_successful():
 		        	stuffsaid.append(asr_req.response.get_recognition_result())
 		        else:
