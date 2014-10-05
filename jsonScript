@@ -1,0 +1,19 @@
+[
+{"me": "Hey, I saw you at HackMIT the other day. What was your name?"},
+{"you": "I'm Michael Johnson, nice to see you again."},
+{"me": "Where do you go to school."},
+{"you": "I go to Yale University."},
+{"me": "How did HackMIT go?"},
+{"you": "Not bad, we won a couple of prizes, got some free T-shirts, I liked it a lot."},
+{"me": "What did you guys build?"},
+{"you": "We built a Google Glass application that records your conversations and stores the transcript of them.  We also built a website that uses machine learning to identify your porn preferences and suggest other videos you may be interested in."},
+{"me": "Oh, how is that useful?"},
+{"you": "Our app uses natural language processing to extract information of people we talked to in order to generate cards with information about them."},
+{"me": "What if the conversation doesn't contain enough information to generate a card?"},
+{"you": "The app will perform a LinkedIn search to get additional information about the person using a photo that was taken during the conversation."},
+{"me": "Oh nice,can it do something else?"},
+{"you": "Our app indexes all conversations, so you can look up your past conversations by topic or keywords. And since the app generated cards, you can also look up all conversations you had with a certain person."},
+{"me": "Wow, that sounds very cool. Can you show it to me?"},
+{"you": "Oh, I just recorded this whole conversation. OK Glass, store this conversation."}
+
+]

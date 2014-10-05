@@ -1,0 +1,17 @@
+Hey, I saw you at HackMIT the other day. What was your name?
+I'm Micah Rosales, nice to see you again.
+Where do you go to school.
+I go to Yale.
+How did HackMIT go?
+Not bad, we won a couple of prizes, got some free T-shirts, I liked it a lot.
+What did you guys build?
+We built a Google Glass application that records your conversations and stores the transcript of them.  We also built a website that uses machine learning to identify your porn preferences and suggest other videos you may be interested in.
+Oh, how is that useful?
+Our app uses natural language processing to extract information of people we talked to in order to generate cards with information about them.
+What if the conversation doesn't contain enough information to generate a card?
+The app will perform a LinkedIn search to get additional information about the person using a photo that was taken during the conversation.
+Oh nice,can it do something else?
+Our app indexes all conversations, so you can look up your past conversations by topic or keywords. And since the app generated cards, you can also look up all conversations you had with a certain person.
+Wow, that sounds very cool. Can you show it to me?
+Oh, I just recorded this whole conversation. OK Glass, store this conversation.
+
