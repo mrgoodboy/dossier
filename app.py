@@ -42,7 +42,7 @@ def upload():
 
 @app.route('/api/photoupload', methods = ['POST'])
 def photoupload():
-	print request.data
+	print request.stream.read()
 	print request.headers
 	if request.data:
 		filename = secure_filename()+'.wav'
