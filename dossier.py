@@ -1,9 +1,15 @@
 import json
 import time
 import requests
+import collections
 from alchemyapi import AlchemyAPI
 from iodpython.iodindex import IODClient
 import os
+import sys
+
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 ALCHEMYAPI_KEY = os.environ["DOSSIER_ALCHEMY_KEY"]
@@ -14,17 +20,6 @@ client = IODClient("http://api.idolondemand.com/", os.environ["DOSSIER_IDOL_KEY"
 index = client.getIndex("conversations")
 cardIndex = client.getIndex("cards")
 
-'''
-run dossierConversation to add transcript to indexConver
-transcript must be segmented and formatted like this
-
-[
-{"me":"hello"},
-{"you": "hello"}
-etc
-]
-
-'''
 
 
 #index a conversation
@@ -35,6 +30,7 @@ def dossierConversation(transcript):
 
 	if "name" in information:
 		title = "Conversation with " + information["name"]
+		addCardToIndex(information)
 	else:
 		information["name"] = ""
 		title = "Conversation"
@@ -43,6 +39,7 @@ def dossierConversation(transcript):
 	concepts = getTopicsFromConversation(preprocessedTranscript)
 	segmentedTranscript = generateSegmentedTranscript(transcript, information)
 
+	indexConversation(segmentedTranscript, information["name"], "Conversation with " + information["name"])
 	return information
 
 def addCardToIndex(information):
@@ -54,12 +51,11 @@ def addCardToIndex(information):
 
 #title should contain persons name
 def indexConversation(transcript, person_id, title):
-	print "started indexing"
 	topics = getTopicsFromConversation(transcript)
 	doc = { "content": transcript, "title": title, "reference": str(time.time()), 
 	"topics": topics, "date": time.strftime("%m/%d/%y"), "person_id": str(person_id) }
+	print doc
 	result = index.addDoc(doc, async=True).json()
-	print "finished indexing"
 	return result
 
 #queries
@@ -109,12 +105,14 @@ def generateSegmentedTranscript(transcript, information):
 			segmentedTranscript += youName
 		segmentedTranscript += segment.values()[0]+"\n"
 
-	return segmentedTranscript
+	return convert(segmentedTranscript)
 
 def getTopicsFromConversation(transcript):
 	concepts = []
 	
 	response = alchemyapi.concepts("text", transcript)
+	response = convert(response)
+
 	if response['status'] == 'OK':
 	    for concept in response['concepts']:
 	    	if float(concept['relevance']) > ALCHEMY_RELEVANCE_THRESHOLD:
@@ -135,6 +133,7 @@ def preprocess(transcript):
 
 def getEntities(preprocessedTranscript):
 	response = alchemyapi.entities('text', preprocessedTranscript)
+	response = convert(response)
 	entities = response['entities']
 	return entities
 
@@ -155,6 +154,7 @@ def extractInformation(transcript):
 
 	#prepare keywords
 	response = alchemyapi.keywords('text', preprocessedTranscript, {'sentiment': 1})
+	response = convert(response)
 	keywords = []
 	for kw in response["keywords"]:
 		if float(kw["relevance"]) > 0.5:
@@ -268,6 +268,15 @@ def findKeywordsInSegment(keywords, segment):
 			keywordsInSegment.append(keyword)
 	return keywordsInSegment
 
+def convert(data):
+    if isinstance(data, basestring):
+        return str(data)
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert, data))
+    else:
+        return data
 
 
 
