@@ -92,7 +92,7 @@ def photoupload():
 		    if counter%4 == 2:
 		    	wavfile.write(os.path.join('audio/',i+filename),8000,speech[lastpt:i])
 		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
-				if asr_req.response.was_successful():
+		        if asr_req.response.was_successful():
 					stuffsaid.append(asr_req.response.get_recognition_result())
 		        else:
 		        	return asr_req.response.error_message
@@ -100,7 +100,7 @@ def photoupload():
 		    	lastpt = i
 		    if counter%4 == 0:
 				wavfile.write(os.path.join('audio/',i+filename),8000,speech[lastpt:i])
-		        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
+				asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=os.path.join('audio/',i+filename))
 				if asr_req.response.was_successful():
 		 			stuffsaid.append(asr_req.response.get_recognition_result())
 		        else:
