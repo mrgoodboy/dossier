@@ -50,27 +50,27 @@ def photoupload():
 @app.route('/api/getcards', methods = ['GET'])
 def getCards():
 	response = dossier.getCards()
-	return json.dumps(response['documents'])
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 @app.route('/api/getcard', methods = ['GET', 'POST'])
 def getCard():
 	response = dossier.getCard(params['person'])
-	return json.dumps(response['documents'])
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 @app.route('/api/getconversations', methods = ['GET'])
 def getConversations():
 	response = dossier.getConversations()
-	return json.dumps(response['documents'])
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 @app.route('/api/getconversationswith', methods = ['GET', 'POST'])
 def getConversationsWith():
 	response = dossier.getConversationsWith(params['person'])
-	return json.dumps(response['documents'])
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 @app.route('/api/getconversationsabout', methods = ['GET', 'POST'])
 def getConversationsAbout():
 	response = dossier.getConversationsAbout(params['topic'])
-	return json.dumps(response['documents'])
+	return json.dumps(response['documents'], ensure_ascii=True)
 
 
 
