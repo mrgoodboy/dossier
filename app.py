@@ -3,6 +3,8 @@ import hashlib
 import dossier
 from flask import request,jsonify,redirect,Response
 import json
+from core import NDEVCredentials
+from asr import *
 
 app = Flask(__name__)
 print "Starting webapp!"
@@ -41,6 +43,13 @@ def photoupload():
 		filename = secure_filename(sum)+'.wav'
 		file.save(os.path.join('/audio/', filename))
         return filename
+        creds = NDEVCredentials()
+        asr_req = ASR.make_request(creds=creds, desired_asr_lang="English (US)", filename=filename)
+		if asr_req.response.was_successful():
+        	return asr_req.response.get_recognition_result()
+        else:
+        	return asr_req.response.error_message
+
 	return False		
 
 
