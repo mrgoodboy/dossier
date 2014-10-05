@@ -117,16 +117,17 @@ def photoupload():
 
 
 def processUnstructuredArray(array):
+
 	transcript = []
 	for idx, val in enumerate(array):
 		if idx % 2 == 0:
 			transcript.append({ "me" : val })
 		else:
 			transcript.append({ "you" : val })
-
+	print transcript
 	response = dossier.dossierConversation(transcript)
 	print response
-	return json.dumps(response['documents'], ensure_ascii=True)
+	return response
 
 #query methods
 @app.route('/api/getcards', methods = ['GET'])
